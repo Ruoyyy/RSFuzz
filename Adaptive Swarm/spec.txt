@@ -1,0 +1,7 @@
+spec_1 = G(uav.position - obstacle.position >= DIS_PRE_MIN_OBS)
+spec_2 = G((uav.position <= DIS_PRE_MAX_UAV) & (uav.position >= DIS_PRE_MIN_UAV))
+spec_3 = F((T_cur - task.finish_time <= PRE_TIME_THRESHOLDS) & (uav.position - task.end_position <= PRE_DIS_THRESHOLDS))
+spec_4 = G(
+    ((|P[k](t+1) - P[k](t)|.x) * (|task.end_position - P[k](t)|.x) >= 0) & 
+    ((|P[k](t+1) - P[k](t)|.y) * (|task.end_position - P[k](t)|.y) >= 0)
+    )
