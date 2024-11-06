@@ -1,3 +1,3 @@
-# README
+#LiTelFuzz: Fuzzing Swarms Based on Behavioral Constraints
 
-## If our paper is accepted, we make the source code of our LiTelFuzz tool publicly available!
+This is the project page for the submission "LiTelFuzz: Fuzzing Swarms Based on Behavioral Constraints".
