@@ -1,0 +1,23 @@
+# Core scientific computing libraries
+numpy>=1.19.0
+scipy>=1.5.0
+matplotlib>=3.3.0
+
+# Specialized libraries
+svgpath2mpl>=1.0.0
+psutil>=5.7.0
+swarmlib>=0.1.0
+
+# Robustness calculation and monitoring
+rtamt>=1.0.0          # STL (Signal Temporal Logic) specification library
+networkx>=2.5.0       # Graph analysis for Katz centrality calculation
+
+# Optional dependencies for extended functionality
+# Uncomment if needed:
+# opencv-python>=4.5.0
+# pandas>=1.1.0
+# scikit-learn>=0.24.0
+
+# Development and testing (optional)
+# pytest>=6.0.0
+# pytest-cov>=2.10.0
