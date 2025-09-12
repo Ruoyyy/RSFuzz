@@ -124,33 +124,27 @@ def attack_strategy_MA(drones_agent_location, drones_agent_r, obstacles_list):
     攻击策略2：MA-Fuzzing
     """
     graph = katz.Graph(drones_agent_location, 1.5*drones_agent_r)
-    vulnerable_nodes = drones_agent_location[graph.vulnerable_nodes[0]]
+    drone_agent_location = drones_agent_location[graph.vulnerable_nodes[0]]
     # print(vulnerable_nodes)
     attack_agent_locations = []
     for i in range(20):
         angle = random.uniform(0, 2 * math.pi)
-        x = vulnerable_nodes[0] + drones_agent_r * math.cos(angle)
-        y = vulnerable_nodes[1] + drones_agent_r * math.sin(angle)
+        x = drone_agent_location[0] + drones_agent_r * math.cos(angle)
+        y = drone_agent_location[1] + drones_agent_r * math.sin(angle)
         attack_agent_locations.append((x, y))
-    min_robustness = [0 for i in range(len(drones_agent_locations))]
-    attack = [0 for i in range(len(drones_agent_locations))]
     robustness = [0 for i in range(20)]
     obstacles_list = list(obstacles_list)
     # 随机在无人机的周围生成20个点 
-    m = 0
-    for attack_points in attack_agent_locations:
-        i = 0 
-        for attack_point in attack_points:
-            x, y = attack_point[0], attack_point[1]
-            obstacles_list.append([(x-1, y),(x, y-1),(x+1, y),(x, y+1)])
-            # 计算每个随机点的robustness值
-            robustness[i] = rob.rule1_prepare(drones_agent_location, obstacles_list)
-            obstacles_list.remove([(x-1, y),(x, y-1),(x+1, y),(x, y+1)])
-            i += 1
-        attack[m] = attack_points[robustness.index(min(robustness))]
-        min_robustness[m] = min(robustness)
-        m += 1
-    attack_agent_location = attack[min_robustness.index(min(min_robustness))]
+    for i, attack_point in enumerate(attack_agent_locations):
+        x, y = attack_point[0], attack_point[1]
+        obstacles_list.append([(x-1, y),(x, y-1),(x+1, y),(x, y+1)])
+        # 计算每个随机点的robustness值
+        robustness[i] = rob.rule1_prepare(drones_agent_location, obstacles_list)
+        obstacles_list.remove([(x-1, y),(x, y-1),(x+1, y),(x, y+1)])
+    
+    # 选择robustness最小的攻击点
+    best_attack_index = robustness.index(min(robustness))
+    attack_agent_location = attack_agent_locations[best_attack_index]
     return attack_agent_location
             
             
