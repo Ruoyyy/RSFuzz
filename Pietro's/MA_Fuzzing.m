@@ -42,7 +42,7 @@ ho = text(map_size/20,map_size/20,strcat(num2str(t),'s'));
 for i = 1:((t_end/dt)+1);
 figure(1);
 target_status(:,3) = 0; %reset searching agents in target_status
-if i >=3 
+if i >=10 
     %%AttackDrone
     %攻击机的坐标
     drones_agent_center = py.attack.drones_agent_location(Q(2,:), Q(3,:));
@@ -74,7 +74,7 @@ if i >=3
     %     end
     % end
     % obstacles(:,9:10) = [];
-    attack_agent_next = py.attack.attack_strategy_2(attack_agent_random, drones_agent_center, obstacles_list);
+    attack_agent_next = py.attack.attack_strategy_MA(drones_agent_center, IR_dist, obstacles_list);
     Attack_agnet_x(1:5) = {[attack_agent_next{1}-1,attack_agent_next{1},attack_agent_next{1}+1,attack_agent_next{1},attack_agent_next{1}-1]};
     Attack_agnet_x(6:24) = {[]};
     Attack_agnet_y(1:5) = {[attack_agent_next{2},attack_agent_next{2}-1,attack_agent_next{2},attack_agent_next{2}+1,attack_agent_next{2}]};

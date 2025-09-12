@@ -32,19 +32,19 @@ def obstacles_list(x, y):
     return obstacles_list
 
 
-def attack_agent_location_random(attack_agent_location, attack_agent_v):
-    random_points= []
-    # 在攻击机的行驶范围内随机生成a个点
-    # 生成随机角度
-    for i in range(20):
-        angle = random.uniform(0, 2*math.pi)
-        # 计算随机点的坐标
-        x = attack_agent_location[0] + attack_agent_v * math.cos(angle)
-        y = attack_agent_location[1] + attack_agent_v * math.sin(angle)
-        random_points.append((x, y))
-    return random_points
+# def attack_agent_location_random(attack_agent_location, attack_agent_v):
+#     random_points= []
+#     # 在攻击机的行驶范围内随机生成a个点
+#     # 生成随机角度
+#     for i in range(20):
+#         angle = random.uniform(0, 2*math.pi)
+#         # 计算随机点的坐标
+#         x = attack_agent_location[0] + attack_agent_v * math.cos(angle)
+#         y = attack_agent_location[1] + attack_agent_v * math.sin(angle)
+#         random_points.append((x, y))
+#     return random_points
     # pass
-def attack_agent_location_random_new(drone_list, drone_agent_r, attack_agent_location, attack_agent_v, number, max_influence_distance):
+def attack_agent_location_random(drone_list, drone_agent_r, attack_agent_location, attack_agent_v, number, max_influence_distance):
     graph = katz.Graph(drone_list, max_influence_distance)
     drone_agent_location = drone_list[graph.vulnerable_nodes[0]]
     # print(drone_agent_location)  
@@ -81,21 +81,7 @@ def attack_agent_location_random_new(drone_list, drone_agent_r, attack_agent_loc
                 y = np.random.uniform(min(y1 - r1, y2 - r2), max(y1 + r1, y2 + r2))
                 if (x - x1)**2 + (y - y1)**2 <= r1**2 and (x - x2)**2 + (y - y2)**2 <= r2**2:
                     random_points.append((x, y))
-                    break
-        
-        # # 绘制两个圆和生成的点
-        # fig, ax = plt.subplots()
-        # circle1 = plt.Circle((x1, y1), r1, color='blue', fill=False)
-        # circle2 = plt.Circle((x2, y2), r2, color='red', fill=False)
-        # ax.add_artist(circle1)
-        # ax.add_artist(circle2)
-        # random_points = np.array(random_points)
-        # plt.scatter(random_points[:, 0], random_points[:, 1], color='green')
-        # plt.xlim(-5, 5)
-        # plt.ylim(-5, 5)
-        # plt.gca().set_aspect('equal', adjustable='box')
-        # plt.show()
-        
+                    break        
         return random_points
 
 def find_influenced_drones(drone_agent_location, drone_agent_r, attack_agent_location, attack_agent_v):
@@ -111,9 +97,9 @@ def find_influenced_drones(drone_agent_location, drone_agent_r, attack_agent_loc
     
     return influenced_drones
 
-def attack_strategy_1(attack_agent_location, drones_agent_location, obstacles_list):
+def attack_strategy_SA(attack_agent_location, drones_agent_location, obstacles_list):
     """
-    攻击策略1：使无人机撞向障碍物
+    攻击策略1：SA-Fuzzing
     """
     # print(len(attack_agent_location))
     robustness = [0 for i in range(len(attack_agent_location))]
@@ -133,83 +119,11 @@ def attack_strategy_1(attack_agent_location, drones_agent_location, obstacles_li
     return attack_agent_location[attack_index]
 
 
-def attack_strategy_1_plus(drone_list, drone_agent_r, attack_agent_location, attack_agent_v, obstacles_list, number, max_influence_distance):
+def attack_strategy_MA(drones_agent_location, drones_agent_r, obstacles_list):
     """
-    攻击策略1的增强版：
-    1. 找到受攻击机影响的无人机子集
-    2. 在子集中找到局部关键节点
-    3. 在局部关键节点和攻击机的交集中生成攻击点
-    4. 评估并选择最优攻击点
+    攻击策略2：MA-Fuzzing
     """
-    # 步骤1: 筛选目标范围
-    influenced_drones_indices, influenced_drones_locations = find_influenced_drones(
-        drone_list, drone_agent_r, attack_agent_location, attack_agent_v
-    )
-
-    if not influenced_drones_locations:
-        print("攻击机无法影响任何无人机，策略中止。")
-        return None
-
-    # 步骤2: 识别局部关键节点
-    graph = katz.Graph(influenced_drones_locations, max_influence_distance)
-    if not graph.vulnerable_nodes:
-        print("在受影响的无人机中未找到脆弱节点，策略中止。")
-        return None
-        
-    local_vulnerable_index = graph.vulnerable_nodes[0]
-    local_key_node_location = influenced_drones_locations[local_vulnerable_index]
-
-    # 步骤3: 生成精准攻击点
-    x1, y1 = local_key_node_location[0], local_key_node_location[1]
-    r1 = drone_agent_r
-    x2, y2 = attack_agent_location[0], attack_agent_location[1]
-    r2 = attack_agent_v
-
-    d = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-    if d > r1 + r2 or d < abs(r1 - r2):
-        print("局部关键节点与攻击机没有重叠影响区域。")
-        return None
-
-    random_points = []
-    attempts = 0
-    while len(random_points) < int(number) and attempts < int(number) * 20:
-        x = np.random.uniform(min(x1 - r1, x2 - r2), max(x1 + r1, x2 + r2))
-        y = np.random.uniform(min(y1 - r1, y2 - r2), max(y1 + r1, y2 + r2))
-        if (x - x1)**2 + (y - y1)**2 <= r1**2 and (x - x2)**2 + (y - y2)**2 <= r2**2:
-            random_points.append((x, y))
-        attempts += 1
-    
-    if not random_points:
-        print("在重叠区域内未能生成有效攻击点。")
-        return None
-
-    # 步骤4: 评估并选择最优攻击
-    robustness_scores = [0 for _ in range(len(random_points))]
-    temp_obstacles_list = list(obstacles_list)
-    
-    for i, attack_point in enumerate(random_points):
-        x, y = attack_point[0], attack_point[1]
-        virtual_obstacle = [(x-1, y), (x, y-1), (x+1, y), (x, y+1)]
-        temp_obstacles_list.append(virtual_obstacle)
-        
-        robustness_scores[i] = rob.rule1_prepare(drone_list, temp_obstacles_list)
-        
-        temp_obstacles_list.pop()
-
-    if not robustness_scores:
-        return None
-        
-    min_robustness_index = robustness_scores.index(min(robustness_scores))
-    best_attack_point = random_points[min_robustness_index]
-    
-    return best_attack_point
-
-
-def attack_strategy_2(drones_agent_location, drones_agent_r, obstacles_list):
-    """
-    攻击策略2：最脆弱点的鲁棒性最小点
-    """
-    graph = katz.Graph(drones_agent_location, 10)
+    graph = katz.Graph(drones_agent_location, 1.5*drones_agent_r)
     vulnerable_nodes = drones_agent_location[graph.vulnerable_nodes[0]]
     # print(vulnerable_nodes)
     attack_agent_locations = []
@@ -217,14 +131,14 @@ def attack_strategy_2(drones_agent_location, drones_agent_r, obstacles_list):
         angle = random.uniform(0, 2 * math.pi)
         x = vulnerable_nodes[0] + drones_agent_r * math.cos(angle)
         y = vulnerable_nodes[1] + drones_agent_r * math.sin(angle)
-        attack_agent_location.append((x, y))
+        attack_agent_locations.append((x, y))
     min_robustness = [0 for i in range(len(drones_agent_locations))]
-    attack = [0 for i in range(len(drones_agent_location))]
+    attack = [0 for i in range(len(drones_agent_locations))]
     robustness = [0 for i in range(20)]
     obstacles_list = list(obstacles_list)
     # 随机在无人机的周围生成20个点 
     m = 0
-    for attack_points in attack_agent_location:
+    for attack_points in attack_agent_locations:
         i = 0 
         for attack_point in attack_points:
             x, y = attack_point[0], attack_point[1]

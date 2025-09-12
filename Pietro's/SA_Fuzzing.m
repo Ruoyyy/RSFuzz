@@ -51,7 +51,7 @@ if i >=10
     end
     m = 1;
     drones_agent_center_new = py.attack.find_influenced_drones(drones_agent_center, IR_dist, attack_agent_location, attack_agent_v);
-    attack_agent_random = py.attack.attack_agent_location_random_new(drones_agent_center_new, IR_dist, attack_agent_location, attack_agent_v, 20, 0.5);
+    attack_agent_random = py.attack.attack_agent_location_random(drones_agent_center_new, IR_dist, attack_agent_location, attack_agent_v, 20, 0.5);
     while m < length(attack_agent_random)
         Attack_agnet_x(1:5) = {[attack_agent_random{m}{1}-1,attack_agent_random{m}{1},attack_agent_random{m}{1}+1,attack_agent_random{m}{1},attack_agent_random{m}{1}-1]};
         Attack_agnet_x(6:24) = {[]};
@@ -70,7 +70,7 @@ if i >=10
         end
     end
     obstacles(:,9:10) = [];
-    attack_agent_next = py.attack.attack_strategy_1(attack_agent_random, drones_agent_center, obstacles_list);
+    attack_agent_next = py.attack.attack_strategy_SA(attack_agent_random, drones_agent_center, obstacles_list);
     Attack_agnet_x(1:5) = {[attack_agent_next{1}-1,attack_agent_next{1},attack_agent_next{1}+1,attack_agent_next{1},attack_agent_next{1}-1]};
     Attack_agnet_x(6:24) = {[]};
     Attack_agnet_y(1:5) = {[attack_agent_next{2},attack_agent_next{2}-1,attack_agent_next{2},attack_agent_next{2}+1,attack_agent_next{2}]};

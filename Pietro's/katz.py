@@ -37,28 +37,8 @@ class Graph:
             for neighbor, distance in self.edges[node_id]:
                 G.add_edge(node_id, neighbor, weight=distance)
 
-        alpha = 0.1  # Default alpha
-        # The parameter alpha must be smaller than the reciprocal of the largest eigenvalue.
-        if G.number_of_edges() > 0:
-            try:
-                spectral_radius = max(np.abs(nx.adjacency_spectrum(G)))
-                if spectral_radius > 0:
-                    # Set alpha to be slightly smaller than the reciprocal of the spectral radius.
-                    alpha = (1 / spectral_radius) * 0.9
-            except Exception:
-                # If eigenvalue computation fails, use a safe fallback alpha.
-                alpha = 0.01
-
         # 使用networkx计算Katz中心性
-        try:
-            katz_centrality = nx.katz_centrality(G, alpha=alpha, beta=1.0, max_iter=10000, tol=0.1)
-        except nx.PowerIterationFailedConvergence:
-            # If it still fails, return a uniform centrality as a fallback.
-            n = G.number_of_nodes()
-            if n > 0:
-                return {node: 1.0/n for node in G.nodes()}
-            else:
-                return {}
+        katz_centrality = nx.katz_centrality(G, alpha=0.1, beta=1.0, max_iter=10000, tol=0.1)
         return katz_centrality
 
     def find_vulnerable_nodes(self, katz_centrality):
@@ -96,7 +76,6 @@ def visualize_graph(graph):
         plt.annotate(f"{distance:.2f}", xy=((x1 + x2) / 2, (y1 + y2) / 2), xytext=(-10, 10), textcoords='offset points', fontsize=8)
 
     plt.show()
-
 # # 生成随机整数点
 # num_points = 10
 # max_coordinate = 10
