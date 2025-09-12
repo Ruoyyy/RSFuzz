@@ -21,7 +21,8 @@ class Graph:
                 if i != j:
                     distance = ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
                     if distance <= self.max_influence_distance:  # 新增条件：距离小于等于最大影响距离
-                        self.edges[node_id1].append((node_id2, distance))
+                        weight = 1.0 / (distance + 1e-9) # Epsilon to avoid division by zero
+                        self.edges[node_id1].append((node_id2, weight))
 
     def get_edges(self, node_id):
         return self.edges[node_id]
@@ -32,11 +33,11 @@ class Graph:
         for node_id, x, y in self.nodes:
             G.add_node(node_id, pos=(x, y))
         for node_id in self.edges:
-            for neighbor, distance in self.edges[node_id]:
-                G.add_edge(node_id, neighbor, weight=distance)
+            for neighbor, weight in self.edges[node_id]:
+                G.add_edge(node_id, neighbor, weight=weight)
 
-        # 使用networkx计算Katz中心性
-        katz_centrality = nx.katz_centrality(G)
+        # 使用networkx计算Katz中心性, 明确指定使用'weight'属性
+        katz_centrality = nx.katz_centrality(G, weight='weight')
         return katz_centrality
 
     def find_vulnerable_nodes(self, katz_centrality):
@@ -74,29 +75,3 @@ def visualize_graph(graph):
         plt.annotate(f"{distance:.2f}", xy=((x1 + x2) / 2, (y1 + y2) / 2), xytext=(-10, 10), textcoords='offset points', fontsize=8)
 
     plt.show()
-
-# 生成随机整数点
-num_points = 10
-max_coordinate = 10
-points_set = set()
-drone_list = []
-
-while len(drone_list) < num_points:
-    x = np.random.randint(0, max_coordinate)
-    y = np.random.randint(0, max_coordinate)
-    point = (x, y)
-    if point not in points_set:
-        points_set.add(point)
-        drone_list.append(point)
-
-max_influence_distance = 5  # 设置最大影响距离
-
-# 创建一个图对象并传入无人机列表和最大影响距离
-graph = Graph(drone_list, max_influence_distance)
-
-# 打印每个节点的Katz中心性
-for node_id, centrality in graph.katz_centrality_values.items():
-    print(f"drone {node_id} Katz centrality: {centrality}")
-
-# 可视化图
-visualize_graph(graph)

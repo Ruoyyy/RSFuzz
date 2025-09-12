@@ -5,8 +5,8 @@ Autonumous navigation of robots formation with Layered path-planner:
 - global planner: RRT
 - local planner: Artificial Potential Fields
 """
-import sys
-sys.path.append('/home/czh/attack/')
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
 from tool.tool import Monitor
 from svgpath2mpl import parse_path
 
@@ -14,16 +14,16 @@ import matplotlib
 import numpy as np
 from numpy.linalg import norm
 
-from tools import *
-from rrt import *
-from potential_fields import *
+from adaptive_swarm.scripts.layered_planner.tools import *
+from adaptive_swarm.scripts.layered_planner.rrt import *
+from adaptive_swarm.scripts.layered_planner.potential_fields import *
 import time
 
 # for 3D plots
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 import matplotlib.pyplot as plt
-matplotlib.use('Qt5Agg')
+matplotlib.use('TkAgg')  # 使用更通用的后端
 
 import random
 import math
@@ -105,7 +105,7 @@ class Robot:
         self.straight_count = 5
         self.no_influence_rob = 0.0
         if not monitor:
-            self.monitor = Monitor('uav' + str(self.id))
+            self.monitor = Monitor('uav' + str(self.id), time.localtime())
         else:
             self.monitor = monitor
         # self.cal_no_influence_rob()

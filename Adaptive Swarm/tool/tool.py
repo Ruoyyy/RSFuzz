@@ -1,5 +1,6 @@
 import rtamt
 import sys
+import os
 import math
 from collections import deque
 import numpy as np
@@ -436,9 +437,17 @@ class Logger:
 
         if not self.logger.handlers:
             uuid_str = strftime("%Y-%m-%d-%H-%M-%S", create_time) 
-            tmp_file_name ='%s.log' % uuid_str
+            tmp_file_name = '%s.log' % uuid_str
 
-            self.fh = logging.FileHandler('/media/ruoyu/ESD-USB/论文/attack1/attack/log_file/%s' % tmp_file_name)
+            # Create a path to the log directory relative to the project root
+            log_dir = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')), 'log_file')
+
+            # Create the directory if it doesn't exist
+            os.makedirs(log_dir, exist_ok=True)
+
+            log_file_path = os.path.join(log_dir, tmp_file_name)
+
+            self.fh = logging.FileHandler(log_file_path)
             self.fh.setLevel(logging.DEBUG)
 
             formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
