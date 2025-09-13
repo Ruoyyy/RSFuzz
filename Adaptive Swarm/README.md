@@ -23,22 +23,22 @@ pip install -r requirements.txt
 - **psutil**: System resource monitoring
 - **rtamt**: STL (Signal Temporal Logic) specification library
 
-## 项目结构
+## Project Structure
 
 ```
 Adaptive Swarm/
 ├─ .python-version
 ├─ README.md
-├─ requirements.txt     #Top-level instructions and dependency list.
+├─ requirements.txt    #Top-level instructions and dependency list.
 ├─ spec.txt
 ├─ log_file/
 ├─ test/
 │  ├─ monitor.py
 │  ├─ rtamt_discrete_time_test.py
 │  └─ rtamt_test.py
-├─ tool/
+├─ tool/    #A collection of tool scripts.
 │  ├─ __pycache__/
-│  ├─ AssertionExtraction.py
+│  ├─ AssertionExtraction.py    #Script for extracting assertions from specifications/logs.
 │  ├─ log_tool.py
 │  ├─ monitor.py
 │  ├─ test.py
@@ -47,10 +47,10 @@ Adaptive Swarm/
    ├─ CITATION.cff
    ├─ CMakeLists.txt
    ├─ LICENSE
-   ├─ MSc_Thesis_Skoltech.pdf
+   ├─ MSc_Thesis_Skoltech.pdf    #Full text of the relevant master's thesis.
    ├─ README.md
    ├─ package.xml
-   ├─ dataset/
+   ├─ dataset/    #Dataset placeholders or data file directories.
    ├─ figures/
    │  ├─ critically_damped/
    │  ├─ formation4/...
@@ -72,7 +72,7 @@ Adaptive Swarm/
    ├─ launch/
    │  ├─ connect123.launch
    │  └─ layered_planner.launch
-   └─ scripts/
+   └─ scripts/    #Main algorithms and example scripts, such as hierarchical path planning, social force models, random walks, and human potential fields; swarmlib.py is a public library.
       ├─ gradient_interactive/...
       ├─ human_potential_fields/...
       ├─ layered_planner/...
@@ -82,69 +82,51 @@ Adaptive Swarm/
       └─ swarmlib.py
 ```
 
+## How to run
 
-
-## 运行方法
-
-### 基本运行
+### Basic
 
 ```bash
-# 进入项目根目录
+# Enter the project root directory
 cd "RSFuzz\Adaptive Swarm"
-
-# 运行fuzz.py（位于adaptive_swarm/scripts/layered_planner目录）
-python adaptive_swarm/scripts/layered_planner/fuzz.py
 ```
 
-### 或者直接进入脚本目录运行
+### Running the Example
 
 ```bash
-cd adaptive_swarm/scripts/layered_planner
-python fuzz.py
-```
-
-### 运行示例
-
-```bash
-# 从项目根目录运行
+# Run fuzz.py (located in the adaptive_swarm/scripts/layered_planner directory)
 python adaptive_swarm/scripts/layered_planner/fuzz.py
-
-# 或进入脚本目录后运行
+# or
 cd adaptive_swarm/scripts/layered_planner
 python fuzz.py
 
-# 运行分层规划器仿真
+# Run a hierarchical planner simulation
 python adaptive_swarm/scripts/layered_planner/layered_planner_sim.py
 
-# 运行标准分层规划器
+# Run the standard hierarchical planner
 python adaptive_swarm/scripts/layered_planner/layered_planner.py
 ```
 
-## 配置说明
+## Configuration Instructions
 
-### 主要参数（在fuzz.py的Params类中）
-- `animate_rrt`: 是否显示RRT构建过程（1显示，0隐藏以减少时间）
-- `visualize`: 是否显示机器人运动可视化（1显示，0隐藏）
-- `postprocessing`: 是否处理和可视化仿真实验数据（1启用，0禁用）
-- `savedata`: 是否保存后处理指标到XLS文件（1保存，0不保存）
-- `maxiters`: 构建RRT的最大采样次数（默认500）
-- `goal_prob`: 采样目标点的概率（默认0.05）
+### Main parameters (in the Params class of fuzz.py)
+- `animate_rrt`: Whether to display the RRT construction process (1 to show, 0 to hide to save time)
+- `visualize`: Whether to display the robot motion visualization (1 to show, 0 to hide)
+- `postprocessing`: Whether to process and visualize simulation experiment data (1 to enable, 0 to disable)
+- `savedata`: Whether to save post-processing metrics to an XLS file (1 to save, 0 to not save)
+- `maxiters`: Maximum number of samples to construct the RRT (default 500)
+- `goal_prob`: Probability of sampling the target point (default 0.05)
 
-### 系统监控
-- 使用Monitor类进行鲁棒性计算和STL规范监控
-- 支持CPU和内存使用率监控
-- 集成势场算法和RRT路径规划
+### Basic parameters
 
-### 基础参数
+- `influence_radius`: Influence radius (default: 0.15m)
+- `interrobots_dist`: Robot distance (default: 0.3m)
+- `num_robots`: Number of robots (default: 4)
+- `drone_vel`: Drone speed (default: 4.0 m/s)
 
-- `influence_radius`: 影响半径 (默认: 0.15m)
-- `interrobots_dist`: 机器人间距 (默认: 0.3m)
-- `num_robots`: 机器人数量 (默认: 4)
-- `drone_vel`: 无人机速度 (默认: 4.0 m/s)
+### Test Parameters
 
-### 测试参数
-
-可以通过修改代码中的`Params`类来调整测试参数：
+Fuzzing parameters can be adjusted by modifying the `Params` class in the code:
 
 ```python
 class Params:
@@ -153,41 +135,14 @@ class Params:
         self.interrobots_dist = 0.3
         self.influence_radius = 0.15
         self.drone_vel = 4.0
-        # 其他参数...
+        # Other parameters...
 ```
 
-## 输出结果
+### Debug Mode
 
-运行后会生成以下输出：
-
-- 实时可视化窗口显示无人机群体运动
-- 控制台输出测试日志和鲁棒性指标
-- 可选的数据文件保存测试结果
-
-## 故障排除
-
-### 常见问题
-
-1. **ImportError**: 确保所有依赖都已正确安装
-2. **matplotlib显示问题**: 在Linux上可能需要安装GUI后端
-   ```bash
-   sudo apt-get install python3-tk
-   ```
-3. **权限问题**: 确保有写入输出目录的权限
-
-### 调试模式
-
-启用详细日志输出：
+Enable verbose logging:
 
 ```python
 import logging
 logging.basicConfig(level=logging.DEBUG)
 ```
-
-## 贡献
-
-欢迎提交Issue和Pull Request来改进本项目。
-
-## 许可证
-
-本项目采用MIT许可证，详见LICENSE文件。
