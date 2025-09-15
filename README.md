@@ -7,10 +7,8 @@
 **RSFuzz, a robustness-guided swarm fuzzing framework designed to detect logical vulnerabilities in multi-robot systems.**   
 
 - [Adaptive Swarm](Adaptive%20Swarm/) (Python): Algorithm A1 in RSFuzz.
-
-- [Howard’s](Howard/) (MATLAB + Python): Algorithm A2 in RSFuzz.
-
-- [Pietro's](Pietro/) (MATLAB + Python): Algorithm A3 in RSFuzz.
+- [Pietro's](Pietro/) (MATLAB + Python): Algorithm A2 in RSFuzz.
+- [Howard’s](Howard/) (MATLAB + Python): Algorithm A3 in RSFuzz.
 
 ## Directory
 ```
