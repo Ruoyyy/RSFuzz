@@ -138,6 +138,17 @@ class Params:
         # Other parameters...
 ```
 
+## Different Fuzzing Modes
+
+```python
+# The main function of fuzz.py
+if __name__ == '__main__':
+    for _ in range(20):
+        attack_demo = attack(attack_strategy=1)
+        # 1:Random-Fuzzing;2:SA-Fuzzing;3:MA-Fuzzing
+        attack_demo.start()
+```
+
 ### Debug Mode
 
 Enable verbose logging:
