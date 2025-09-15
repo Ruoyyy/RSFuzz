@@ -1,4 +1,4 @@
-# RSFuzz prototype for Pietro
+# RSFuzz prototype for Pietro‘s
 
 ## Environmental Requirements
 
@@ -19,7 +19,7 @@
 
 ## Dependency Installation
 
-### 1. Python environment configuration
+### Python environment configuration
 ```bash
 # Creating a Python Virtual Environment
 conda create -n drone-fuzzing python=3.10

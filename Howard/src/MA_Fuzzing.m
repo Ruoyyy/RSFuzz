@@ -169,8 +169,12 @@ xpos = [];
 it = 1;
 count = 0;
 done = 0;
-% 打开文件以追加方式写入
-fileID = fopen('./iteration_log_MA_10.txt', 'a');
+% 结果目录与日志文件（按无人群数量Nd命名；不含攻击机）
+if ~exist('./Result','dir')
+    mkdir('./Result');
+end
+logfile = sprintf('./Result/iteration_log_%d.txt', Nd);
+fileID = fopen(logfile, 'a');
 while( done == 0 )
     i = 1;
     
@@ -255,7 +259,10 @@ while( done == 0 )
     drones_vel = [5,5,5,5,5,5,5,5,5,5];
     attack_pos = MA_fuzzer(attackdrone, drones, obst, end_loc, it, drones_vel);
     attackdrone.pos = attack_pos;
-    disp(['Attack position: ', mat2str(attack_pos)]);
+    % 计算并记录鲁棒性
+    rob_val = Robustness(attackdrone, drones, obst, end_loc, it, drones_vel);
+    fprintf(fileID, '[%f, %f, %f, %f]\n', attack_pos(1), attack_pos(2), attack_pos(3), rob_val);
+    fprintf('[%f, %f, %f, %f]\n', attack_pos(1), attack_pos(2), attack_pos(3), rob_val);
     
     it = it + 1;
 end
